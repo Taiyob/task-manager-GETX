@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager_application/data/models/login_response.dart';
-import 'package:task_manager_application/data/models/response_object.dart';
-import 'package:task_manager_application/data/services/network_caller.dart';
-import 'package:task_manager_application/presentation/controllers/auth_controller.dart';
+import 'package:get/get.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:task_manager_application/presentation/controllers/sign_in_controller.dart';
 import 'package:task_manager_application/presentation/screens/auth/sign_up_screen.dart';
 import 'package:task_manager_application/presentation/screens/main_bottom_nav_screen.dart';
 import 'package:task_manager_application/presentation/widgets/background_widget.dart';
@@ -22,7 +21,7 @@ class _SignInScreenState extends State<SignInScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailTEC = TextEditingController();
   final TextEditingController _passwordTEC = TextEditingController();
-  bool _isLoginInprogress = false;
+  final SignInController _signInController = Get.find<SignInController>();
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +67,18 @@ class _SignInScreenState extends State<SignInScreen> {
                     },
                   ),
                   const SizedBox(height: 16,),
-                  SizedBox(width: double.infinity, child: Visibility(
-                    visible: _isLoginInprogress == false,
-                    replacement: const Center(child: CircularProgressIndicator()),
-                    child: ElevatedButton(onPressed: (){
-                      if(_formKey.currentState!.validate()){
-                        _signIn();
-                      }
-                    }, child: const Icon(Icons.arrow_circle_right_outlined)),
+                  SizedBox(width: double.infinity, child: GetBuilder<SignInController>(
+                    builder: (signIncontroller){
+                      return Visibility(
+                        visible: signIncontroller.inprogress == false,
+                        replacement: const Center(child: CircularProgressIndicator()),
+                        child: ElevatedButton(onPressed: (){
+                          if(_formKey.currentState!.validate()){
+                            _signIn();
+                          }
+                        }, child: const Icon(Icons.arrow_circle_right_outlined)),
+                      );
+                    }
                   )),
                   const SizedBox(height: 60,),
                   Center(child: TextButton(onPressed: (){
@@ -100,29 +103,14 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   Future<void> _signIn() async{
-    _isLoginInprogress = true;
-    setState(() {});
-    Map<String, dynamic> inputParams = {
-      "email" : _emailTEC.text.trim(),
-      "password" : _passwordTEC.text,
-    };
-    final ResponseObject response = await NetworkCaller.postRequest(Urls.login, inputParams, fromSignIn: true);
-    _isLoginInprogress = false;
-    setState(() {});
-    if(response.isSuccess){
-      if(!mounted){
-        return;
-      }
-      LoginResponseModel loginResponseModel = LoginResponseModel.fromJson(response.responseBody);
-      print(loginResponseModel.userData?.firstName);
-      await AuthController.saveUserData(loginResponseModel.userData!);
-      await AuthController.saveUserToken(loginResponseModel.token!);
+    final result = await _signInController.signIn(_emailTEC.text.trim(), _passwordTEC.text);
+    if(result == true){
       if(mounted){
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const MainBottomNavScreen(),), (route) => false);
       }
     }else{
       if(mounted){
-        showSnackBarMessageWidget(context, response.errorMessage ?? 'Login Failed! Try Again');
+        showSnackBarMessageWidget(context, _signInController.errorMessage);
       }
     }
   }
