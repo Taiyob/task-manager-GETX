@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 import 'package:task_manager_application/data/services/network_caller.dart';
 import 'package:task_manager_application/data/utilities/urls.dart';
 import 'package:task_manager_application/presentation/controllers/auth_controller.dart';
@@ -49,7 +51,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                   SizedBox(height: 16,),
                   SizedBox(width: double.infinity, child: ElevatedButton(onPressed: (){
                     _verifyEmailRequest(_emailTEC.text.trim());
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>PinVerificationScreen(email: _emailTEC.text.trim()),),);
+                    Get.to(()=>PinVerificationScreen(email: _emailTEC.text.trim()));
                   }, child: Icon(Icons.arrow_circle_right_outlined))),
                   SizedBox(height: 32,),
                   Row(
@@ -57,7 +59,7 @@ class _EmailVerificationScreenState extends State<EmailVerificationScreen> {
                     children: [
                       Text("Have account?",style: TextStyle(fontSize: 16,color: Colors.black54),),
                       TextButton(onPressed: (){
-                        Navigator.pop(context);
+                        Get.back();
                       }, child: Text('Sign in'),),
                     ],
                   ),

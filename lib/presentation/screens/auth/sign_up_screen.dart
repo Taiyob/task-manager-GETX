@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:task_manager_application/data/services/network_caller.dart';
+import 'package:get/get.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:task_manager_application/presentation/controllers/sign_up_controller.dart';
 import 'package:task_manager_application/presentation/widgets/background_widget.dart';
 import 'package:task_manager_application/presentation/widgets/snack_bar_message_widget.dart';
 
-import '../../../data/models/response_object.dart';
-import '../../../data/utilities/urls.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -20,7 +20,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _lastNameTEC = TextEditingController();
   final TextEditingController _mobileTEC = TextEditingController();
   final TextEditingController _passwordTEC = TextEditingController();
-  bool _isRegistrationInprogress = false;
+  final SignUpController _signUpController = Get.find<SignUpController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,18 +130,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   SizedBox(
                     width: double.infinity,
-                    child: Visibility(
-                      visible: _isRegistrationInprogress == false,
-                      replacement:
+                    child: GetBuilder<SignUpController>(
+                      builder: (signUpController){
+                        return Visibility(
+                          visible: signUpController.inprogress == false,
+                          replacement:
                           const Center(child: CircularProgressIndicator()),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _signUp();
-                          }
-                        },
-                        child: const Icon(Icons.arrow_circle_right_outlined),
-                      ),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                _signUp();
+                              }
+                            },
+                            child: const Icon(Icons.arrow_circle_right_outlined),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(
@@ -171,29 +176,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   Future<void> _signUp() async {
-    _isRegistrationInprogress = true;
-    setState(() {});
-    Map<String, dynamic> inputParams = {
-      "email": _emailTEC.text.trim(),
-      "firstName": _firstNameTEC.text.trim(),
-      "lastName": _lastNameTEC.text.trim(),
-      "mobile": _mobileTEC.text.trim(),
-      "password": _passwordTEC.text,
-    };
-    final ResponseObject response =
-        await NetworkCaller.postRequest(Urls.registration, inputParams);
-    _isRegistrationInprogress = false;
-    setState(() {});
-    if (response.isSuccess) {
+    final result = await _signUpController.signUp(_emailTEC.text.trim(), _firstNameTEC.text.trim(), _lastNameTEC.text.trim(), _mobileTEC.text.trim(), _passwordTEC.text);
+    if (result == true) {
       if (mounted) {
         showSnackBarMessageWidget(
             context, 'Registration Success! Please Login');
-        Navigator.pop(context);
+        Get.back();
       }
     } else {
       if (mounted) {
         showSnackBarMessageWidget(
-            context, 'Registration Failed, Try Again', true);
+            context, _signUpController.errorMessage, true);
       }
     }
   }

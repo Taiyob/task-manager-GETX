@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:task_manager_application/data/services/network_caller.dart';
 import 'package:task_manager_application/data/utilities/urls.dart';
@@ -91,12 +92,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                               await _pinVerificationRequest(
                                   widget.email, _pinTEC.text.trim());
                           if (verificationResult) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SetPasswordScreen(email: widget.email, otp: _pinTEC.text.trim()),
-                              ),
-                            );
+                            Get.to(()=>SetPasswordScreen(email: widget.email, otp: _pinTEC.text.trim()));
                           } else {
                             // Show a message indicating that the pin verification failed
                             showSnackBarMessageWidget(
@@ -123,12 +119,7 @@ class _PinVerificationScreenState extends State<PinVerificationScreen> {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SignInScreen(),
-                              ),
-                              (route) => false);
+                          Get.offAll(()=>SignInScreen());
                         },
                         child: Text('Sign in'),
                       ),
