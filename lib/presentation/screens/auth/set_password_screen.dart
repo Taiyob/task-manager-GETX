@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:task_manager_application/data/services/network_caller.dart';
 import 'package:task_manager_application/data/utilities/urls.dart';
 import 'package:task_manager_application/presentation/screens/auth/sign_in_screen.dart';
@@ -70,7 +71,7 @@ class _SetPasswordScreenState extends State<SetPasswordScreen> {
                     children: [
                       Text("Have account?",style: TextStyle(fontSize: 16,color: Colors.black54),),
                       TextButton(onPressed: (){
-                        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>SignInScreen()), (route) => false);
+                        Get.offAll(()=>SignInScreen());
                       }, child: Text('Sign in'),),
                     ],
                   ),

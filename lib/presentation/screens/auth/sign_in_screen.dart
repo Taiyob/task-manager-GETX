@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_instance/get_instance.dart';
 import 'package:task_manager_application/presentation/controllers/sign_in_controller.dart';
 import 'package:task_manager_application/presentation/screens/auth/sign_up_screen.dart';
 import 'package:task_manager_application/presentation/screens/main_bottom_nav_screen.dart';
 import 'package:task_manager_application/presentation/widgets/background_widget.dart';
 import 'package:task_manager_application/presentation/widgets/snack_bar_message_widget.dart';
-
-import '../../../data/utilities/urls.dart';
 import 'email_verification_screen.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -89,7 +86,7 @@ class _SignInScreenState extends State<SignInScreen> {
                     children: [
                       const Text("Don't have an account?",style: TextStyle(fontSize: 16,color: Colors.black54),),
                       TextButton(onPressed: (){
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const SignUpScreen()));
+                        Get.to(()=>SignUpScreen());
                       }, child: const Text('Sign up'),),
                     ],
                   ),
@@ -106,7 +103,7 @@ class _SignInScreenState extends State<SignInScreen> {
     final result = await _signInController.signIn(_emailTEC.text.trim(), _passwordTEC.text);
     if(result == true){
       if(mounted){
-        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>const MainBottomNavScreen(),), (route) => false);
+        Get.offAll(()=>const MainBottomNavScreen());
       }
     }else{
       if(mounted){

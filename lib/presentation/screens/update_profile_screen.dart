@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:task_manager_application/data/models/user_data.dart';
 import 'package:task_manager_application/data/services/network_caller.dart';
@@ -252,12 +253,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         await AuthController.saveUserData(userData);
       }
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainBottomNavScreen(),
-            ),
-            (route) => false);
+        Get.offAll(()=>const MainBottomNavScreen());
       }
     } else {
       if (!mounted) {
